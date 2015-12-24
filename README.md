@@ -16,8 +16,8 @@ ES6包含以下新的特性:
 - [增强的对象字面量](#enhanced-object-literals)
 - [模板字符串](#template-strings)
 - [解构](#destructuring)
-- [default + rest + spread](#default--rest--spread)
-- [let + const 块级变量申明](#let--const)
+- [默认参数和不定参数](#default--rest--spread)
+- [let + const 块级作用域变量](#let--const)
 - [迭代器 + for..of](#iterators--forof)
 - [generators](#generators)
 - [unicode](#unicode)
@@ -30,8 +30,6 @@ ES6包含以下新的特性:
 - [promises](#promises)
 - [math + number + string + array + object APIs](#math--number--string--array--object-apis)
 - [binary and octal literals](#binary-and-octal-literals)
-- [reflect api](#reflect-api)
-- [tail calls](#tail-calls)
 
 ## ECMAScript 6 特性
 
@@ -110,7 +108,7 @@ var obj = {
 ```
 
 ### 模板字符串
-模板字符串提供了一种构建字符串的语法糖，类似于Perl, Python和其他语言中的字符串插值特性. 另外可以加入标记，并且其纯天然的防止了注入攻击。
+模板字符串提供了一种构建字符串的语法糖，类似于Perl, Python和其他语言中的字符串插值特性. 
 
 ```JavaScript
 
@@ -119,56 +117,50 @@ var obj = {
  not legal.`
 
 // 字符串插值
-var name = "Bob", time = "today";
+var name = "Leon", time = "today";
 `Hello ${name}, how are you ${time}?`
 
 ```
 
-### 解构
-Destructuring allows binding using pattern matching, with support for matching arrays and objects.  Destructuring is fail-soft, similar to standard object lookup `foo["bar"]`, producing `undefined` values when not found.
+### 解构赋值
+解构赋值允许你使用类似数组或对象字面量的语法将数组和对象的属性赋给各种变量。这种赋值语法极度简洁，同时还比传统的属性访问方法更为清晰。
 
 
 
 ```JavaScript
-// list matching
-var [a, , b] = [1,2,3];
+// 数组  a=1,b=2,c=3
+var [a, b, c] = [1,2,3];
 
-// object matching
-var { op: a, lhs: { op: b }, rhs: c }
-       = getASTNode()
+// 数组,没有匹配的返回undefined , a=1,b=2,c=undefined
+var [a, b, c] = [1,2];
 
-// object matching shorthand
-// binds `op`, `lhs` and `rhs` in scope
-var {op, lhs, rhs} = getASTNode()
+// 对象, m='leon', n=18
+var {name:m,age:n}={name:'leon',age:18}
 
-// Can be used in parameter position
-function g({name: x}) {
-  console.log(x);
-}
-g({name: 5})
+// 对象属性名与变量名一致时，可以简写为
+var {foo,bar}={foo:'1',bar:2}
 
-// Fail-soft destructuring
-var [a] = [];
-a === undefined;
+// 嵌套 name='leon'
+var {x:{y:{z:name}}}={x:{y:{z:'leon'}}}
 
-// Fail-soft destructuring with defaults
-var [a = 1] = [];
-a === 1;
 ```
 
-### Default + Rest + Spread
-Callee-evaluated default parameter values.  Turn an array into consecutive arguments in a function call.  Bind trailing parameters to an array.  Rest replaces the need for `arguments` and addresses common cases more directly.
+### 默认参数和不定参数
+函数调用者不需要传递所有可能存在的参数，没有被传递的参数由默认参数进行填充。
+在所有函数参数中，只有最后一个才可以被标记为不定参数。函数被调用时，不定参数前的所有参数都正常填充，任何“额外的”参数都被放进一个数组中并赋值给不定参数。如果没有额外的参数，不定参数就是一个空数组，它永远不会是undefined。
 
 ```JavaScript
+// 默认参数
 function f(x, y=12) {
-  // y is 12 if not passed (or passed as undefined)
+  // 如果没有传入y 或传入的值为undefined ,则y=12
   return x + y;
 }
 f(3) == 15
 ```
 ```JavaScript
+// 不定参数
 function f(x, ...y) {
-  // y is an Array
+  // y 是一个数组
   return x * y.length;
 }
 f(3, "hello", true) == 6
@@ -177,12 +169,12 @@ f(3, "hello", true) == 6
 function f(x, y, z) {
   return x + y + z;
 }
-// Pass each elem of array as argument
+// 数组中的每个元素作为参数传入
 f(...[1,2,3]) == 6
 ```
 
-### Let + Const
-Block-scoped binding constructs.  `let` is the new `var`.  `const` is single-assignment.  Static restrictions prevent use before assignment.
+### let + const 块级作用域变量
+Let 和 Const 声明的变量具有块级作用域, 传统使用var申明的变量在整个函数内都可访问。const声明的变量只可以在声明时赋值，不可随意修改，否则会导致SyntaxError（语法错误）。
 
 
 ```JavaScript
@@ -190,145 +182,96 @@ function f() {
   {
     let x;
     {
-      // okay, block scoped name
-      const x = "sneaky";
-      // error, const
+      const x = "me";
+      // 因为是const， 所以不可修改，报错
       x = "foo";
     }
-    // error, already declared in block
+    // 报错， 用let重定义变量会抛出一个语法错误
     let x = "inner";
   }
 }
 ```
 
-### Iterators + For..Of
-Iterator objects enable custom iteration like CLR IEnumerable or Java Iterable.  Generalize `for..in` to custom iterator-based iteration with `for..of`.  Don’t require realizing an array, enabling lazy design patterns like LINQ.
+### 迭代器 和 for..of
+迭代器类似于 .NET CLR 的 IEnumerable 或 Java 的 Iterable, 所有拥有[Symbol.iterator]()的对象被称为可迭代的, 而 for ..of 用于遍历实现了迭代器方法的对象，比如Array, Map, Set, Array-like Object
+
 
 ```JavaScript
-let fibonacci = {
-  [Symbol.iterator]() {
-    let pre = 0, cur = 1;
-    return {
-      next() {
-        [pre, cur] = [cur, pre + cur];
-        return { done: false, value: cur }
-      }
-    }
-  }
+for (var value of [1,2,3]) {
+  // 依次打印 1,2,3
+  console.log(value); 
 }
 
-for (var n of fibonacci) {
-  // truncate the sequence at 1000
-  if (n > 1000)
-    break;
-  console.log(n);
-}
 ```
 
-Iteration is based on these duck-typed interfaces (using [TypeScript](http://typescriptlang.org) type syntax for exposition only):
-```TypeScript
-interface IteratorResult {
-  done: boolean;
-  value: any;
-}
-interface Iterator {
-  next(): IteratorResult;
-}
-interface Iterable {
-  [Symbol.iterator](): Iterator
-}
-```
+### 生成器
 
-### Generators
-Generators simplify iterator-authoring using `function*` and `yield`.  A function declared as function* returns a Generator instance.  Generators are subtypes of iterators which include additional  `next` and `throw`.  These enable values to flow back into the generator, so `yield` is an expression form which returns a value (or throws).
-
-Note: Can also be used to enable ‘await’-like async programming, see also ES7 `await` proposal.
+生成器对象由生成器函数(function* 定义的函数)返回,它同时准守iterator 和 Iterable 协议。著名的koa nodejs框架就是基于此特性构建。
 
 ```JavaScript
-var fibonacci = {
-  [Symbol.iterator]: function*() {
-    var pre = 0, cur = 1;
-    for (;;) {
-      var temp = pre;
-      pre = cur;
-      cur += temp;
-      yield cur;
-    }
-  }
+function* gen() { 
+  yield 1;
+  yield 2;
+  yield 3;
 }
 
-for (var n of fibonacci) {
-  // truncate the sequence at 1000
-  if (n > 1000)
-    break;
-  console.log(n);
-}
-```
-
-The generator interface is (using [TypeScript](http://typescriptlang.org) type syntax for exposition only):
-
-```TypeScript
-interface Generator extends Iterator {
-    next(value?: any): IteratorResult;
-    throw(exception: any);
-}
+// g 是生成器对象
+var g = gen(); 
 ```
 
 ### Unicode
-Non-breaking additions to support full Unicode, including new Unicode literal form in strings and new RegExp `u` mode to handle code points, as well as new APIs to process strings at the 21bit code points level.  These additions support building global apps in JavaScript.
+增加了一些新的Unicode字符，并且增加了新的正则表达式匹配模式`u`, 更方便的支持国际化的js应用
 
 ```JavaScript
-// same as ES5.1
-"𠮷".length == 2
 
-// new RegExp behaviour, opt-in ‘u’
 "𠮷".match(/./u)[0].length == 2
 
-// new form
 "\u{20BB7}"=="𠮷"=="\uD842\uDFB7"
 
-// new String ops
 "𠮷".codePointAt(0) == 0x20BB7
 
-// for-of iterates code points
-for(var c of "𠮷") {
-  console.log(c);
-}
 ```
 
-### Modules
-Language-level support for modules for component definition.  Codifies patterns from popular JavaScript module loaders (AMD, CommonJS). Runtime behaviour defined by a host-defined default loader.  Implicitly async model – no code executes until requested modules are available and processed.
+### 模块
+模块已经得到语言级别的支持，ES6的模块设计参照了AMD CommonJS 规范。
 
 ```JavaScript
 // lib/math.js
+// export 定义要导出的对象
 export function sum(x, y) {
   return x + y;
 }
 export var pi = 3.141593;
+
+// 没加export, 所以foo不被导出
+function foo(){}
 ```
 ```JavaScript
 // app.js
+// 导入全部在lib/math.js中标记为导出的对象
 import * as math from "lib/math";
 alert("2π = " + math.sum(math.pi, math.pi));
 ```
 ```JavaScript
-// otherApp.js
+// otherApp.js 
+// 显示标记需要导入的成员
 import {sum, pi} from "lib/math";
 alert("2π = " + sum(pi, pi));
 ```
 
-Some additional features include `export default` and `export *`:
-
 ```JavaScript
 // lib/mathplusplus.js
+// 导入lib/math中的全部对象并重新导出
 export * from "lib/math";
 export var e = 2.71828182846;
+// 默认导出对象
 export default function(x) {
     return Math.log(x);
 }
 ```
 ```JavaScript
 // app.js
+// ln为上面的默认导出对象, pi来自于lib/math,e来自于mathplusplus
 import ln, {pi, e} from "lib/mathplusplus";
 alert("2π = " + ln(e)*pi*2);
 ```
@@ -361,10 +304,9 @@ System.set('jquery', Module({$: $})); // WARNING: not yet finalized
 ```
 
 ### Map + Set + WeakMap + WeakSet
-Efficient data structures for common algorithms.  WeakMaps provides leak-free object-key’d side tables.
 
 ```JavaScript
-// Sets
+// Sets 
 var s = new Set();
 s.add("hello").add("goodbye").add("hello");
 s.size === 2;
@@ -384,7 +326,6 @@ wm.size === undefined
 // Weak Sets
 var ws = new WeakSet();
 ws.add({ data: 42 });
-// Because the added object has no other references, it will not be held in the set
 ```
 
 ### Proxies
@@ -497,8 +438,7 @@ arr[1] = 12;
 arr.length == 2
 ```
 
-### Math + Number + String + Array + Object APIs
-Many new library additions, including core Math libraries, Array conversion helpers, String helpers, and Object.assign for copying.
+### Math + Number + String + Array + Object 新增的方法属性
 
 ```JavaScript
 Number.EPSILON
@@ -512,29 +452,27 @@ Math.imul(Math.pow(2, 32) - 1, Math.pow(2, 32) - 2) // 2
 "abcde".includes("cd") // true
 "abc".repeat(3) // "abcabcabc"
 
-Array.from(document.querySelectorAll('*')) // Returns a real Array
-Array.of(1, 2, 3) // Similar to new Array(...), but without special one-arg behavior
-[0, 0, 0].fill(7, 1) // [0,7,7]
+Array.from(document.querySelectorAll('*')) // 返回一个真实的数组
 [1, 2, 3].find(x => x == 3) // 3
 [1, 2, 3].findIndex(x => x == 2) // 1
-[1, 2, 3, 4, 5].copyWithin(3, 0) // [1, 2, 3, 1, 2]
-["a", "b", "c"].entries() // iterator [0, "a"], [1,"b"], [2,"c"]
 ["a", "b", "c"].keys() // iterator 0, 1, 2
 ["a", "b", "c"].values() // iterator "a", "b", "c"
 
 Object.assign(Point, { origin: new Point(0,0) })
 ```
 
-### Binary and Octal Literals
-Two new numeric literal forms are added for binary (`b`) and octal (`o`).
+### 二进制和八进制字面量
 
 ```JavaScript
+// 二进制
 0b111110111 === 503 // true
+
+// 八进制
 0o767 === 503 // true
 ```
 
 ### Promises
-Promises are a library for asynchronous programming.  Promises are a first class representation of a value that may be made available in the future.  Promises are used in many existing JavaScript libraries.
+Promise 是异步编程的一种规范，解决了js异步编程中callback hell问题, 在es6中原生支持.
 
 ```JavaScript
 function timeout(duration = 0) {
@@ -550,26 +488,4 @@ var p = timeout(1000).then(() => {
 }).catch(err => {
     return Promise.all([timeout(100), timeout(200)]);
 })
-```
-
-### Reflect API
-Full reflection API exposing the runtime-level meta-operations on objects.  This is effectively the inverse of the Proxy API, and allows making calls corresponding to the same meta-operations as the proxy traps.  Especially useful for implementing proxies.
-
-```JavaScript
-// No sample yet
-```
-
-### Tail Calls
-Calls in tail-position are guaranteed to not grow the stack unboundedly.  Makes recursive algorithms safe in the face of unbounded inputs.
-
-```JavaScript
-function factorial(n, acc = 1) {
-    'use strict';
-    if (n <= 1) return acc;
-    return factorial(n - 1, n * acc);
-}
-
-// Stack overflow in most implementations today,
-// but safe on arbitrary inputs in ES6
-factorial(100000)
 ```
