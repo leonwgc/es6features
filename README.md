@@ -1,40 +1,11 @@
-# ECMAScript 6 <sup>[git.io/es6features](http://git.io/es6features)</sup>
+# 浅尝ECMAScript6
 
-## Introduction
-<!-- ECMAScript 6, also known as ECMAScript 2015, is the latest version of the ECMAScript standard.  ES6 is a significant update to the language, and the first update to the language since ES5 was standardized in 2009. Implementation of these features in major JavaScript engines is [underway now](http://kangax.github.io/es5-compat-table/es6 -->
+## 简介
 
-ECMAScript6 是最新版本的ECMAScript标准，于2015年6月正式推出(所以也称为ECMAScript 2015),相比于2009年推出的es5规范,es6定义了更加丰富的语言特性，基于该规范的重量级实现，JS也迎来了语法上的重大变革，JS正变得越来越强大。
+ECMAScript6 是最新的ECMAScript标准，于2015年6月正式推出(所以也称为ECMAScript 2015),相比于2009年推出的es5, es6定义了更加丰富的语言特性，基于该标准的Javascript语言也迎来了语法上的重大变革。本文列举了部分es6新特性，希望之前没接触es6的小伙伴读完本文能对下一代js编程有一个初步的认识。
 
-
-
-See the [ES6 standard](http://www.ecma-international.org/ecma-262/6.0/) for full specification of the ECMAScript 6 language.
-
-<!-- ES6 includes the following new features: -->
-ES6包含以下新的特性:
-- [箭头函数](#_1)
-- [类](#classes)
-- [增强的对象字面量](#enhanced-object-literals)
-- [模板字符串](#template-strings)
-- [解构](#destructuring)
-- [默认参数和不定参数](#default--rest--spread)
-- [let + const 块级作用域变量](#let--const)
-- [迭代器 + for..of](#iterators--forof)
-- [generators](#generators)
-- [unicode](#unicode)
-- [模块](#modules)
-- [模块加载器](#module-loaders)
-- [map + set + weakmap + weakset](#map--set--weakmap--weakset)
-- [代理](#proxies)
-- [symbols](#symbols)
-- [subclassable built-ins](#subclassable-built-ins)
-- [promises](#promises)
-- [math + number + string + array + object APIs](#math--number--string--array--object-apis)
-- [binary and octal literals](#binary-and-octal-literals)
-
-## ECMAScript 6 特性
-
-### 箭头函数
-箭头函数用 "=>"简化函数定义，语义上类似于C#, Java8 和 CoffeeScript (Lambda表达式),支持语句块和表达式函数体，和函数的唯一区别在于函数体引用的 this 和包裹代码的this一致。
+#### 箭头函数
+箭头函数用 "=>"简化函数定义，类似于C#, Java8中的Lambda表达式,支持语句块和表达式函数体，和普通函数的唯一区别在于函数体引用的 this 和包裹代码的this一致。
 
 ```JavaScript
 // 表达式
@@ -48,9 +19,9 @@ nums.forEach(v => {
     fives.push(v);
 });
 
-// this , 这里 this引用bob
+// this , 这里 this引用 leon
 var bob = {
-  _name: "Bob",
+  _name: "leon",
   _friends: [],
   printFriends() {
     this._friends.forEach(f =>
@@ -59,36 +30,38 @@ var bob = {
 }
 ```
 
-### 类
-ES6的类只是基于原型继承的简单语法糖, 使用方便的声明式定义，使得类型定义和其他面向对象语言一致。类支持原型继承，父类调用，实体和静态方法以及构造函数。
+#### 类
+ES6的类简单而言只是基于原型继承的语法糖, 使用方便的声明式定义，使得类型定义和其他面向对象语言一致。类支持原型继承，父类调用，实体和静态方法以及构造函数。
 
 ```JavaScript
-class SkinnedMesh extends THREE.Mesh {
-  constructor(geometry, materials) {
-    super(geometry, materials);
 
-    this.idMatrix = SkinnedMesh.defaultMatrix();
-    this.bones = [];
-    this.boneMatrices = [];
-    //...
+class Animal { 
+  constructor(name) {
+    this.name = name;
   }
-  update(camera) {
-    //...
-    super.update();
-  }
-  get boneCount() {
-    return this.bones.length;
-  }
-  set matrixType(matrixType) {
-    this.idMatrix = SkinnedMesh[matrixType]();
-  }
-  static defaultMatrix() {
-    return new THREE.Matrix4();
+  
+  speak() {
+    console.log(this.name + ' makes a noise.');
   }
 }
+
+class Cat extends Animal {
+  constructor(name, color) {
+     // 调用父类的构造函数
+     super(name);
+     this.color = color;
+  }
+
+  speak() {
+    // 调用父类的 speak 方法
+    super.speak();
+    console.log(this.name + ' miao~~~.');
+  }
+}
+
 ```
 
-### 增强的对象字面量
+#### 增强的对象字面量
 对象字面量现在支持在对象构建时设置原型对象，定义方法，调用父类构造函数，以及用表达式计算属性. 这些特性使得对象字面量定义和类型定义十分相似， 给基于对象的设计带来了便利。
 
 ```JavaScript
@@ -107,7 +80,7 @@ var obj = {
 };
 ```
 
-### 模板字符串
+#### 模板字符串
 模板字符串提供了一种构建字符串的语法糖，类似于Perl, Python和其他语言中的字符串插值特性. 
 
 ```JavaScript
@@ -122,7 +95,7 @@ var name = "Leon", time = "today";
 
 ```
 
-### 解构赋值
+#### 解构赋值
 解构赋值允许你使用类似数组或对象字面量的语法将数组和对象的属性赋给各种变量。这种赋值语法极度简洁，同时还比传统的属性访问方法更为清晰。
 
 
@@ -145,7 +118,7 @@ var {x:{y:{z:name}}}={x:{y:{z:'leon'}}}
 
 ```
 
-### 默认参数和不定参数
+#### 默认参数和不定参数
 函数调用者不需要传递所有可能存在的参数，没有被传递的参数由默认参数进行填充。
 在所有函数参数中，只有最后一个才可以被标记为不定参数。函数被调用时，不定参数前的所有参数都正常填充，任何“额外的”参数都被放进一个数组中并赋值给不定参数。如果没有额外的参数，不定参数就是一个空数组，它永远不会是undefined。
 
@@ -173,8 +146,8 @@ function f(x, y, z) {
 f(...[1,2,3]) == 6
 ```
 
-### let + const 块级作用域变量
-Let 和 Const 声明的变量具有块级作用域, 传统使用var申明的变量在整个函数内都可访问。const声明的变量只可以在声明时赋值，不可随意修改，否则会导致SyntaxError（语法错误）。
+#### let + const 块级作用域变量
+let 和 const 声明的变量具有块级作用域, 传统使用var申明的变量在整个函数内都可访问。const声明的变量只可以在声明时赋值，不可随意修改，否则会导致SyntaxError（语法错误）。
 
 
 ```JavaScript
@@ -192,8 +165,8 @@ function f() {
 }
 ```
 
-### 迭代器 和 for..of
-迭代器类似于 .NET CLR 的 IEnumerable 或 Java 的 Iterable, 所有拥有[Symbol.iterator]()的对象被称为可迭代的, 而 for ..of 用于遍历实现了迭代器方法的对象，比如Array, Map, Set, Array-like Object
+#### 迭代器 和 for..of
+迭代器类似于 .NET CLR 的 IEnumerable 或 Java 的 Iterable, 所有拥有[Symbol.iterator]的对象被称为可迭代的, 而 for ..of 用于遍历实现了迭代器方法的对象，比如Array, Map, Set, Array-like Object
 
 
 ```JavaScript
@@ -204,7 +177,7 @@ for (var value of [1,2,3]) {
 
 ```
 
-### 生成器
+#### 生成器
 
 生成器对象由生成器函数(function* 定义的函数)返回,它同时准守iterator 和 Iterable 协议。著名的koa nodejs框架就是基于此特性构建。
 
@@ -219,20 +192,7 @@ function* gen() {
 var g = gen(); 
 ```
 
-### Unicode
-增加了一些新的Unicode字符，并且增加了新的正则表达式匹配模式`u`, 更方便的支持国际化的js应用
-
-```JavaScript
-
-"𠮷".match(/./u)[0].length == 2
-
-"\u{20BB7}"=="𠮷"=="\uD842\uDFB7"
-
-"𠮷".codePointAt(0) == 0x20BB7
-
-```
-
-### 模块
+#### 模块
 模块已经得到语言级别的支持，ES6的模块设计参照了AMD CommonJS 规范。
 
 ```JavaScript
@@ -276,34 +236,7 @@ import ln, {pi, e} from "lib/mathplusplus";
 alert("2π = " + ln(e)*pi*2);
 ```
 
-### Module Loaders
-Module loaders support:
-- Dynamic loading
-- State isolation
-- Global namespace isolation
-- Compilation hooks
-- Nested virtualization
-
-The default module loader can be configured, and new loaders can be constructed to evaluate and load code in isolated or constrained contexts.
-
-```JavaScript
-// Dynamic loading – ‘System’ is default loader
-System.import('lib/math').then(function(m) {
-  alert("2π = " + m.sum(m.pi, m.pi));
-});
-
-// Create execution sandboxes – new Loaders
-var loader = new Loader({
-  global: fixup(window) // replace ‘console.log’
-});
-loader.eval("console.log('hello world!');");
-
-// Directly manipulate module cache
-System.get('jquery');
-System.set('jquery', Module({$: $})); // WARNING: not yet finalized
-```
-
-### Map + Set + WeakMap + WeakSet
+#### Map + Set + WeakMap + WeakSet
 
 ```JavaScript
 // Sets 
@@ -328,65 +261,13 @@ var ws = new WeakSet();
 ws.add({ data: 42 });
 ```
 
-### Proxies
-Proxies enable creation of objects with the full range of behaviors available to host objects.  Can be used for interception, object virtualization, logging/profiling, etc.
-
-```JavaScript
-// Proxying a normal object
-var target = {};
-var handler = {
-  get: function (receiver, name) {
-    return `Hello, ${name}!`;
-  }
-};
-
-var p = new Proxy(target, handler);
-p.world === 'Hello, world!';
-```
-
-```JavaScript
-// Proxying a function object
-var target = function () { return 'I am the target'; };
-var handler = {
-  apply: function (receiver, ...args) {
-    return 'I am the proxy';
-  }
-};
-
-var p = new Proxy(target, handler);
-p() === 'I am the proxy';
-```
-
-There are traps available for all of the runtime-level meta-operations:
-
-```JavaScript
-var handler =
-{
-  get:...,
-  set:...,
-  has:...,
-  deleteProperty:...,
-  apply:...,
-  construct:...,
-  getOwnPropertyDescriptor:...,
-  defineProperty:...,
-  getPrototypeOf:...,
-  setPrototypeOf:...,
-  enumerate:...,
-  ownKeys:...,
-  preventExtensions:...,
-  isExtensible:...
-}
-```
-
-### Symbols
-Symbols enable access control for object state.  Symbols allow properties to be keyed by either `string` (as in ES5) or `symbol`.  Symbols are a new primitive type. Optional `description` parameter used in debugging - but is not part of identity.  Symbols are unique (like gensym), but not private since they are exposed via reflection features like `Object.getOwnPropertySymbols`.
+#### Symbol
+Symbol是es6新添加的一个基本数据类型, 其他的基本类型有string,number,boolean,null,undefined. Symbol是唯一的，一般用作对象的key以存取相关状态信息。
 
 
 ```JavaScript
 var MyClass = (function() {
 
-  // module scoped symbol
   var key = Symbol("key");
 
   function MyClass(privateData) {
@@ -406,39 +287,19 @@ var c = new MyClass("hello")
 c["key"] === undefined
 ```
 
-### Subclassable Built-ins
-In ES6, built-ins like `Array`, `Date` and DOM `Element`s can be subclassed.
-
-Object construction for a function named `Ctor` now uses two-phases (both virtually dispatched):
-- Call `Ctor[@@create]` to allocate the object, installing any special behavior
-- Invoke constructor on new instance to initialize
-
-The known `@@create` symbol is available via `Symbol.create`.  Built-ins now expose their `@@create` explicitly.
+#### 可被继承的内置对象
+ES6中，一些内置对象，比如 Array, Date 和 DOM 元素对象可以被继承
 
 ```JavaScript
-// Pseudo-code of Array
-class Array {
-    constructor(...args) { /* ... */ }
-    static [Symbol.create]() {
-        // Install special [[DefineOwnProperty]]
-        // to magically update 'length'
-    }
-}
 
-// User code of Array subclass
+// 这里定义一个Array的子类MyArray
 class MyArray extends Array {
     constructor(...args) { super(...args); }
 }
 
-// Two-phase 'new':
-// 1) Call @@create to allocate object
-// 2) Invoke constructor on new instance
-var arr = new MyArray();
-arr[1] = 12;
-arr.length == 2
 ```
 
-### Math + Number + String + Array + Object 新增的方法属性
+#### Math + Number + String + Array + Object 新增的方法属性
 
 ```JavaScript
 Number.EPSILON
@@ -461,7 +322,7 @@ Array.from(document.querySelectorAll('*')) // 返回一个真实的数组
 Object.assign(Point, { origin: new Point(0,0) })
 ```
 
-### 二进制和八进制字面量
+#### 二进制和八进制字面量
 
 ```JavaScript
 // 二进制
@@ -471,7 +332,7 @@ Object.assign(Point, { origin: new Point(0,0) })
 0o767 === 503 // true
 ```
 
-### Promises
+#### Promises
 Promise 是异步编程的一种规范，解决了js异步编程中callback hell问题, 在es6中原生支持.
 
 ```JavaScript
@@ -489,3 +350,6 @@ var p = timeout(1000).then(() => {
     return Promise.all([timeout(100), timeout(200)]);
 })
 ```
+## 结语
+除了以上特性，es6还增强了对unicode编码的支持，以便更好的支持应用国际化, 还有代理等等特性，这里就不一一列举了，目前javascript开发范围越来广泛，web, 移动应用，智能家居...记得哪个牛人说过这样一句话，
+"未来所有可以用js编写的应用最终都会用js编写"。今年es6规范正式推出，尽管当前各厂商浏览器和js处理引擎对es6还没有完全支持(可以用babel编译成es5)，但是未来某一天，es6的几乎所有特性都会被全部支持，所以开始尝试es6是一件值得花时间的事情。
