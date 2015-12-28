@@ -262,7 +262,7 @@ ws.add({ data: 42 });
 ```
 
 #### Symbol
-Symbol是es6新添加的一个基本数据类型, 其他的基本类型有string,number,boolean,null,undefined. Symbol是唯一的，一般用作对象的key以存取相关状态信息。
+Symbol是es6新添加的一个基元数据类型, 其他的基元类型有string,number,boolean,null,undefined. Symbol是唯一的，一般用作对象的key以存取相关状态信息。
 
 
 ```JavaScript
@@ -299,7 +299,7 @@ class MyArray extends Array {
 
 ```
 
-#### Math + Number + String + Array + Object 新增的方法属性
+#### Math + Number + String + Array + Object 新增的方法和属性
 
 ```JavaScript
 Number.EPSILON
