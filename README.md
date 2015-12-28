@@ -287,8 +287,8 @@ var c = new MyClass("hello")
 c["key"] === undefined
 ```
 
-#### 可被继承的内置对象
-ES6中，一些内置对象，比如 Array, Date 和 DOM 元素对象可以被继承
+#### 子类化内置对象
+ES6中的内置对象，比如 Array, Date 等可以被子类继承
 
 ```JavaScript
 
